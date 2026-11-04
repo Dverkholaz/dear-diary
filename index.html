@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
 <title>Dear Diary</title>
 <script>
   // Тема выставляется до отрисовки, чтобы не мигало
@@ -319,6 +319,11 @@ function addSchemeMessage() {
   img.onload = scrollDown;
   img.onclick = openLightbox;
   el.appendChild(img);
+  const cr = document.createElement("div");
+  cr.className = "author";
+  cr.style.marginTop = "8px";
+  cr.textContent = "Схема эмоций: Роберт Плутчик";
+  el.appendChild(cr);
   chat.appendChild(el);
   scrollDown();
 }
@@ -482,6 +487,11 @@ Dear Diary — это дневник эмоций, помогающий боле
   mail.textContent = AUTHOR_EMAIL;
   a.appendChild(mail);
   el.appendChild(a);
+  const m = document.createElement("div");
+  m.className = "author";
+  m.style.marginTop = "4px";
+  m.textContent = "В основе дневника — методика Альберта Эллиса";
+  el.appendChild(m);
   scrollDown();
 }
 
@@ -687,6 +697,29 @@ input.addEventListener("keydown", e => {
   if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); form.requestSubmit(); }
 });
 newBtn.addEventListener("click", () => startEntry(true));
+
+/* ---------- Экранная клавиатура ---------- */
+// Chrome на Android и Safari на iPhone по умолчанию не уменьшают страницу под клавиатуру,
+// и она закрывает поле ввода и последние сообщения. Подгоняем высоту под видимую часть экрана.
+(function () {
+  const vv = window.visualViewport;
+  if (!vv) return;
+  const app = document.querySelector(".app");
+  function fit() {
+    const hidden = window.innerHeight - vv.height;
+    if (hidden > 80) {                                   // клавиатура открыта
+      app.style.height = vv.height + "px";
+      app.style.transform = vv.offsetTop ? `translateY(${vv.offsetTop}px)` : "";
+    } else {
+      app.style.height = "";
+      app.style.transform = "";
+    }
+    scrollDown();
+  }
+  vv.addEventListener("resize", fit);
+  vv.addEventListener("scroll", fit);
+  input.addEventListener("focus", () => setTimeout(fit, 300));
+})();
 
 /* ---------- Старт ---------- */
 if (name) { addMsg(`Привет, ${name}!`, "bot"); startEntry(false); } else { askName(); }
