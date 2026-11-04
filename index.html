@@ -476,22 +476,24 @@ function introduce() {
 
 Dear Diary — это дневник эмоций, помогающий более чутко отслеживать свои состояния и их составляющие.
 
-Регулярные записи делают переживания понятнее, помогают замечать повторяющиеся сценарии и приносить на встречи с психологом подробный материал для работы.`, "bot");
+Регулярные записи делают переживания понятнее, помогают замечать повторяющиеся сценарии и приносить на встречи с психологом подробный материал для работы.
+
+Все записи в дневнике эмоций остаются конфиденциальны и видны только тебе.`, "bot");
   const el = chat.lastElementChild;
+  const m = document.createElement("div");
+  m.className = "author";
+  m.style.marginTop = "14px";
+  m.textContent = "В основе дневника — методика Альберта Эллиса";
+  el.appendChild(m);
   const a = document.createElement("div");
   a.className = "author";
-  a.style.marginTop = "14px";
-  a.append("Автор: " + AUTHOR + " · ");
+  a.style.marginTop = "4px";
+  a.append("Для связи: " + AUTHOR + " · ");
   const mail = document.createElement("a");
   mail.href = "mailto:" + AUTHOR_EMAIL;
   mail.textContent = AUTHOR_EMAIL;
   a.appendChild(mail);
   el.appendChild(a);
-  const m = document.createElement("div");
-  m.className = "author";
-  m.style.marginTop = "4px";
-  m.textContent = "В основе дневника — методика Альберта Эллиса";
-  el.appendChild(m);
   scrollDown();
 }
 
