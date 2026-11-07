@@ -48,6 +48,8 @@
   .tools { display: flex; gap: 8px; }
   .icon { width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: transparent;
           display: grid; place-items: center; cursor: pointer; color: var(--muted); padding: 0; flex: none; }
+  a.icon { text-decoration: none; }
+  @media (max-width: 389px) { .brand span { display: none; } }
   .icon:hover { color: var(--accent-strong); border-color: var(--accent); }
   .icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8;
               stroke-linecap: round; stroke-linejoin: round; }
@@ -103,6 +105,7 @@
   .summary .bye { margin-top: 8px; }
   .author { color: var(--muted); font-size: 12.5px; font-style: italic; line-height: 1.4; margin: 0; }
   .author.center { text-align: center; }
+  .cal-author { white-space: nowrap; font-size: clamp(8.5px, 2.6vw, 12.5px); }
   .author a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
   .author a:hover { color: var(--accent-strong); }
   .answers { padding-left: 20px; margin: 12px 0; }
@@ -168,6 +171,27 @@
   .entry .answers { margin: 8px 0 8px; }
   .none { color: var(--muted); padding: 24px 0; text-align: center; }
 
+  /* Окно «О дневнике» */
+  .info-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .info-top h2 { font-size: 19px; margin: 0; font-weight: 600; }
+  .info-body { overflow-y: auto; min-height: 0; padding-right: 2px; font-size: 15.5px; line-height: 1.6; }
+  .info-body h3 { font-size: 16px; font-weight: 600; margin: 24px 0 8px; }
+  .info-body h3:first-of-type { margin-top: 12px; }
+  .info-body p { margin: 0 0 10px; }
+  .info-body .lead { color: var(--muted); }
+  .info-body ol { margin: 4px 0 0; padding-left: 22px; }
+  .info-body ol li { margin-bottom: 8px; padding-left: 2px; }
+  .info-body ol li::marker { color: var(--accent-strong); font-weight: 600; }
+  .info-body dl { margin: 4px 0 0; padding: 14px 16px; background: var(--card); border: 1px solid var(--line);
+                  border-radius: 14px; }
+  .info-body dt { color: var(--muted); font-size: 13px; }
+  .info-body dd { margin: 0 0 10px; overflow-wrap: anywhere; }
+  .info-body dd:last-child { margin-bottom: 0; }
+  .info-body a { color: var(--accent-strong); text-underline-offset: 3px; }
+  .info-body .contact-plate { margin: 24px 0 4px; padding: 14px 16px; border-radius: 14px; background: var(--me); }
+  .info-body .contact-plate p { margin: 0; }
+  .info-body .contact-plate p + p { margin-top: 6px; }
+
   @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -183,6 +207,9 @@
   <header>
     <div class="brand"><h1>Dear Diary</h1><span>дневник эмоций</span></div>
     <div class="tools">
+      <button class="icon" id="aboutBtn" type="button" aria-label="О дневнике и его авторах" title="О дневнике и его авторах">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r=".6" fill="currentColor"/></svg>
+      </button>
       <button class="icon" id="calBtn" type="button" aria-label="Календарь записей" title="Календарь записей">
         <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/></svg>
       </button>
@@ -219,8 +246,8 @@
       </div>
       <div class="cal-week"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span></div>
       <div class="cal-grid" id="calGrid"></div>
-      <p class="cal-hint">Нажми на дату, чтобы открыть страницу дня. Точкой отмечены дни с записями.</p>
-      <p class="author center" style="margin-top:18px">Автор: Дарья Верхолаз, клинический психолог</p>
+      <p class="cal-hint">Нажми на дату, чтобы открыть дневник дня.<br>Точкой отмечены дни с записями.</p>
+      <p class="author center cal-author" style="margin-top:18px">Для связи: dverkholaz@mail.ru · Дарья Верхолаз, клинический психолог</p>
     </div>
     <div id="dayView" class="hidden">
       <div class="day-top">
@@ -229,6 +256,44 @@
         <button class="icon" id="closeDay" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
       <div class="paper" id="dayPage"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="infoOverlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="info-top">
+      <h2 id="infoTitle">О дневнике эмоций</h2>
+      <button class="icon" id="closeInfo" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="info-body">
+      <p class="lead">Dear Diary помогает более чутко отслеживать свои состояния и их составляющие.</p>
+
+      <h3>Зачем нужен?</h3>
+      <p>Регулярные записи делают переживания понятнее, помогают замечать повторяющиеся сценарии и приносить на встречи с психологом подробный материал для работы.</p>
+
+      <h3>Как работает?</h3>
+      <p>Создание записи занимает несколько минут. Отвечайте своими словами — правильных и неправильных ответов нет.</p>
+      <p>Вопросы основаны на дневнике СМЭР Дмитрия Ковпака: Ситуация, Мысль, Эмоция, Реакция. Они помогают разложить переживание на понятные части и лучше замечать свои реакции.</p>
+      <p>Все ответы сохраняются в одной записи с датой и временем. Прошлые записи можно открыть в календаре — дни с записями отмечены точкой.</p>
+
+      <h3>Конфиденциальность</h3>
+      <p>Все записи в дневнике эмоций остаются конфиденциальны и видны только вам. Они хранятся только на устройстве, и никуда не отправляются.<br>Если очистить данные сайта или открыть дневник на другом устройстве, прежние записи там не появятся.</p>
+
+      <h3>Авторы и источники</h3>
+      <dl>
+        <dt>Автор ABC-модели</dt>
+        <dd>Альберт Эллис</dd>
+        <dt>Адаптация на русский язык: дневник СМЭР</dt>
+        <dd>Дмитрий Ковпак</dd>
+        <dt>Схема эмоций</dt>
+        <dd>Роберт Плутчик</dd>
+      </dl>
+
+      <div class="contact-plate">
+        <p>По вопросам:</p>
+        <p>Дарья Верхолаз, клинический психолог<br><a href="mailto:dverkholaz@mail.ru">dverkholaz@mail.ru</a></p>
+      </div>
     </div>
   </div>
 </div>
@@ -488,7 +553,7 @@ Dear Diary — это дневник эмоций, помогающий боле
   const a = document.createElement("div");
   a.className = "author";
   a.style.marginTop = "4px";
-  a.append("Для связи: " + AUTHOR + " · ");
+  a.append("Для связи — " + AUTHOR + " · ");
   const mail = document.createElement("a");
   mail.href = "mailto:" + AUTHOR_EMAIL;
   mail.textContent = AUTHOR_EMAIL;
@@ -666,9 +731,21 @@ $("nextM").addEventListener("click", () => shiftMonth(1));
 $("calOverlay").addEventListener("click", e => { if (e.target === $("calOverlay")) closeCalendar(); });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !$("lightbox").classList.contains("hidden")) { closeLightbox(); return; }
+  if (e.key === "Escape" && !$("infoOverlay").classList.contains("hidden")) { closeInfo(); return; }
   if (e.key !== "Escape" || $("calOverlay").classList.contains("hidden")) return;
   if (!$("dayView").classList.contains("hidden")) backToCalendar(); else closeCalendar();
 });
+
+/* ---------- Окно «О дневнике» ---------- */
+function openInfo() {
+  $("infoOverlay").classList.remove("hidden");
+  $("infoOverlay").querySelector(".info-body").scrollTop = 0;
+  $("closeInfo").focus();
+}
+function closeInfo() { $("infoOverlay").classList.add("hidden"); $("aboutBtn").focus(); }
+$("aboutBtn").addEventListener("click", openInfo);
+$("closeInfo").addEventListener("click", closeInfo);
+$("infoOverlay").addEventListener("click", e => { if (e.target === $("infoOverlay")) closeInfo(); });
 
 /* ---------- Тема ---------- */
 $("themeBtn").addEventListener("click", () => {
